@@ -34,6 +34,22 @@ Built with a **violet-indigo glassmorphism** aesthetic, it doesn't just track yo
 
 ---
 
+## 🛠 Tech Stack
+
+SubTrack is built using a modern, industry-standard stack for high-performance mobile and web experiences:
+
+| Category | Technology | Usage |
+| :--- | :--- | :--- |
+| **Frontend** | [React Native](https://reactnative.dev/) / [Expo](https://expo.dev/) | Cross-platform mobile & web development |
+| **Navigation** | [Expo Router](https://docs.expo.dev/router/introduction/) | Type-safe, file-based routing |
+| **Backend** | [Supabase](https://supabase.com/) | Real-time DB, Auth, and Edge Functions |
+| **State** | [Zustand](https://github.com/pmndrs/zustand) | Lightweight, performant state management |
+| **Payments** | [Stripe](https://stripe.com/) | Secure payment processing and premium upgrades |
+| **Email** | [Resend](https://resend.com/) | Transactional email delivery |
+| **Date Logic** | [date-fns](https://date-fns.org/) | Precision renewal and trial calculations |
+
+---
+
 ## 🏗 Modular Architecture
 
 The project follows a scalable, modular folder structure designed for growth:
