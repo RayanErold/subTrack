@@ -2,8 +2,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { formatDistanceToNow } from 'date-fns';
+import { Ionicons } from '@expo/vector-icons';
 import Colors from '../constants/Colors';
-import { useSubscriptionStore, Subscription } from '../store/useSubscriptionStore';
+import { useSubscriptionStore } from '../store/useSubscriptionStore';
+import { Subscription } from '../types';
+import { CATEGORIES } from '../utils/smartCategories';
 
 interface Props {
     subscription: Subscription;
@@ -23,6 +26,9 @@ export default function SubscriptionItem({ subscription, onPress }: Props) {
     const cardBorder = isLightBg ? 'rgba(0,0,0,0.1)' : '#333';
     const isTrial = subscription.type === 'trial';
 
+    // Get category icon
+    const categoryInfo = CATEGORIES.find(c => c.id === (subscription.category || 'Other')) || CATEGORIES[CATEGORIES.length - 1];
+
     // Calculate renewal text
     const renewalDate = new Date(subscription.renewalDate);
     const timeUntil = formatDistanceToNow(renewalDate, { addSuffix: true });
@@ -32,6 +38,9 @@ export default function SubscriptionItem({ subscription, onPress }: Props) {
             style={({ pressed }) => [styles.container, { backgroundColor: cardBg, borderColor: cardBorder }, pressed && styles.pressed]}
             onPress={onPress}
         >
+            <View style={[styles.iconContainer, { backgroundColor: categoryInfo.color + '20' }]}>
+                <Ionicons name={categoryInfo.icon as any} size={24} color={categoryInfo.color} />
+            </View>
             <View style={styles.info}>
                 <Text style={[styles.name, { fontFamily: currentFont, color: textColor }]}>{subscription.name}</Text>
                 <Text style={[styles.renewal, { fontFamily: currentFont, color: subTextColor }, isTrial && { color: currentPrimary, fontWeight: '600' }]}>
@@ -70,6 +79,14 @@ const styles = StyleSheet.create({
     },
     pressed: {
         opacity: 0.8,
+    },
+    iconContainer: {
+        width: 48,
+        height: 48,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 16,
     },
     info: {
         flex: 1,

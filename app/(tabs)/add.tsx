@@ -2,13 +2,15 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, Pressable, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/Colors';
 import Input from '../../components/Input';
 import Paywall from '../../components/Paywall';
-import { useSubscriptionStore, SubscriptionType, BillingCycle } from '../../store/useSubscriptionStore';
+import { useSubscriptionStore } from '../../store/useSubscriptionStore';
+import { SubscriptionType, BillingCycle } from '../../types';
 import { addYears, addMonths, format } from 'date-fns';
 import { scheduleRenewalNotification, registerForPushNotificationsAsync } from '../../utils/notifications';
-import { predictServiceDetails, Category } from '../../utils/smartCategories';
+import { predictServiceDetails, Category, CATEGORIES } from '../../utils/smartCategories';
 
 export default function TabAddScreen() {
     const router = useRouter();
@@ -185,6 +187,32 @@ export default function TabAddScreen() {
                 </View>
             </View>
 
+            {/* Category Selection */}
+            <View style={styles.row}>
+                <Text style={[styles.label, { fontFamily: currentFont, color: subTextColor }]}>Category</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryScroll}>
+                    {CATEGORIES.map((cat) => {
+                        const isSelected = category === cat.id;
+                        return (
+                            <Pressable 
+                                key={cat.id} 
+                                style={[
+                                    styles.categoryBtn, 
+                                    { borderColor: isLightBg ? '#e5e5ea' : '#333' },
+                                    isSelected && { backgroundColor: cat.color, borderColor: cat.color }
+                                ]}
+                                onPress={() => setCategory(cat.id)}
+                            >
+                                <Ionicons name={cat.icon as any} size={18} color={isSelected ? '#fff' : subTextColor} />
+                                <Text style={[styles.categoryBtnText, { fontFamily: currentFont, color: isSelected ? '#fff' : subTextColor }]}>
+                                    {cat.id}
+                                </Text>
+                            </Pressable>
+                        )
+                    })}
+                </ScrollView>
+            </View>
+
             <Input
                 label={type === 'trial' ? "Trial Ends (YYYY-MM-DD)" : "Next Renewal (YYYY-MM-DD)"}
                 placeholder="YYYY-MM-DD"
@@ -284,6 +312,23 @@ const styles = StyleSheet.create({
     },
     cycleText: {
         color: Colors.dark.text,
+    },
+    categoryScroll: {
+        paddingVertical: 10,
+        gap: 10,
+    },
+    categoryBtn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 20,
+        borderWidth: 1,
+        backgroundColor: 'transparent',
+    },
+    categoryBtnText: {
+        marginLeft: 8,
+        fontWeight: '600',
     },
     saveBtn: {
         backgroundColor: Colors.dark.primary,

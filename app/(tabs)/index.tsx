@@ -3,7 +3,8 @@ import React, { useEffect } from 'react';
 import { StyleSheet, View, Text, FlatList, SafeAreaView, StatusBar, ScrollView, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../utils/supabase';
-import { useSubscriptionStore, Subscription } from '../../store/useSubscriptionStore';
+import { useSubscriptionStore } from '../../store/useSubscriptionStore';
+import { Subscription } from '../../types';
 import Colors from '../../constants/Colors';
 import Dashboard from '../../components/Dashboard';
 import SubscriptionItem from '../../components/SubscriptionItem';
@@ -15,7 +16,7 @@ import { useTheme } from '../../hooks/useTheme';
 
 export default function TabOneScreen() {
   const router = useRouter();
-  const { subscriptions, getActiveTotal, getTrialRisk, getNextMonthForecast, isPremium, upgradeToPremium, downgradeToFree } = useSubscriptionStore();
+  const { subscriptions, getActiveTotal, getTrialRisk, getNextMonthForecast, isPremium, upgradeToPremium, downgradeToFree, currency } = useSubscriptionStore();
   const { 
     isLightBg, 
     currentPrimary, 
@@ -31,6 +32,7 @@ export default function TabOneScreen() {
 
   const [showPaywall, setShowPaywall] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
+  const [expandedCategory, setExpandedCategory] = React.useState<string | null>(null);
 
   const activeTotal = getActiveTotal();
   const trialRisk = getTrialRisk();
@@ -120,17 +122,59 @@ export default function TabOneScreen() {
               </View>
             )}
 
-            {/* Active Subs */}
+            {/* Active Subs Grouped by Category */}
             {activeSubs.length > 0 && (
               <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: currentSecondary, fontFamily: currentFont }]}>Active Subscriptions</Text>
-                {activeSubs.map(sub => (
-                  <SubscriptionItem
-                    key={sub.id}
-                    subscription={sub}
-                    onPress={() => router.push(`/subscription/${sub.id}`)}
-                  />
-                ))}
+                <Text style={[styles.sectionTitle, { color: currentSecondary, fontFamily: currentFont }]}>Active Subscriptions (By Category)</Text>
+                
+                {(() => {
+                  const grouped = activeSubs.reduce((acc, sub) => {
+                    const cat = sub.category || 'Other';
+                    if (!acc[cat]) acc[cat] = [];
+                    acc[cat].push(sub);
+                    return acc;
+                  }, {} as Record<string, Subscription[]>);
+
+                  return Object.keys(grouped).sort().map(cat => {
+                    const isExpanded = expandedCategory === cat;
+                    const catSubs = grouped[cat];
+                    const catTotal = catSubs.reduce((sum, s) => sum + s.price, 0);
+
+                    return (
+                    <View key={cat} style={{ marginBottom: 12 }}>
+                      <Pressable 
+                        style={[styles.categoryHeaderCard, { backgroundColor: cardBg, borderColor: isLightBg ? 'rgba(0,0,0,0.1)' : '#333' }]} 
+                        onPress={() => setExpandedCategory(isExpanded ? null : cat)}
+                      >
+                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                               <Text style={[styles.categoryHeaderText, { color: textColor, fontFamily: currentFont, marginBottom: 0 }]}>{cat}</Text>
+                               <View style={{ backgroundColor: currentPrimary + '20', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 10, marginLeft: 8 }}>
+                                  <Text style={{ color: currentPrimary, fontSize: 12, fontWeight: 'bold' }}>{catSubs.length}</Text>
+                               </View>
+                            </View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                              <Text style={{ color: subTextColor, fontSize: 14, fontWeight: '600' }}>{currency}{catTotal.toFixed(2)}/mo</Text>
+                              <Ionicons name={isExpanded ? "chevron-up" : "chevron-down"} size={20} color={subTextColor} />
+                            </View>
+                         </View>
+                      </Pressable>
+                      
+                      {isExpanded && (
+                        <View style={[styles.listContainer, { marginTop: 12 }]}>
+                          {catSubs.map(sub => (
+                            <SubscriptionItem
+                              key={sub.id}
+                              subscription={sub}
+                              onPress={() => router.push(`/subscription/${sub.id}`)}
+                            />
+                          ))}
+                        </View>
+                      )}
+                    </View>
+                  )});
+                })()}
+
               </View>
             )}
           </View>
@@ -212,6 +256,18 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginBottom: 12,
     opacity: 0.8,
+  },
+  categoryHeaderText: {
+    fontSize: 14,
+    fontWeight: '700',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  categoryHeaderCard: {
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
   },
   listContainer: {
     gap: 10

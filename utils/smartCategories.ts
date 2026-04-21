@@ -1,13 +1,50 @@
 import { BillingCycle } from '../store/useSubscriptionStore';
 
-export type Category = 'Entertainment' | 'Productivity' | 'Utilities' | 'Social' | 'Shopping' | 'Other';
+export type Category = 
+    | 'Entertainment' 
+    | 'Productivity' 
+    | 'Utilities' 
+    | 'Social' 
+    | 'Shopping' 
+    | 'Finance'
+    | 'Health'
+    | 'Education'
+    | 'Gaming'
+    | 'News'
+    | 'Professional'
+    | 'Travel'
+    | 'Food'
+    | 'Other';
+
+export interface CategoryInfo {
+    id: Category;
+    icon: string;
+    color: string;
+}
+
+export const CATEGORIES: CategoryInfo[] = [
+    { id: 'Entertainment', icon: 'film-outline', color: '#8B5CF6' },
+    { id: 'Productivity', icon: 'briefcase-outline', color: '#3B82F6' },
+    { id: 'Finance', icon: 'wallet-outline', color: '#10B981' },
+    { id: 'Health', icon: 'fitness-outline', color: '#EC4899' },
+    { id: 'Shopping', icon: 'cart-outline', color: '#F59E0B' },
+    { id: 'Utilities', icon: 'flash-outline', color: '#6366F1' },
+    { id: 'Education', icon: 'book-outline', color: '#14B8A6' },
+    { id: 'Gaming', icon: 'game-controller-outline', color: '#8B5CF6' },
+    { id: 'Social', icon: 'people-outline', color: '#3B82F6' },
+    { id: 'News', icon: 'newspaper-outline', color: '#F43F5E' },
+    { id: 'Professional', icon: 'laptop-outline', color: '#64748B' },
+    { id: 'Travel', icon: 'airplane-outline', color: '#0EA5E9' },
+    { id: 'Food', icon: 'restaurant-outline', color: '#F97316' },
+    { id: 'Other', icon: 'grid-outline', color: '#A8A29E' },
+];
 
 interface ServiceInfo {
     name: string;
     defaultPrice: number;
     category: Category;
-    billingCycle: BillingCycle;
-    icon?: string; // We can map this to Ionicons later if needed
+    billingCycle: 'monthly' | 'yearly';
+    icon?: string;
 }
 
 // A "Knowledge Base" of popular subscriptions
