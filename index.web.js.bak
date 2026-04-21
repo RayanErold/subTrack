@@ -1,0 +1,33 @@
+import { AppRegistry, View, Text, StyleSheet } from 'react-native';
+
+const App = () => (
+    <View style={styles.container}>
+        <Text style={styles.text}>Diagnostic Mode: React Native Web is Working</Text>
+        <Text style={styles.subtext}>If you see this, the issue is likely Expo Router configuration.</Text>
+    </View>
+);
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#000',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    text: {
+        color: '#fff',
+        fontSize: 24,
+        fontWeight: 'bold',
+    },
+    subtext: {
+        color: '#aaa',
+        marginTop: 10,
+    }
+});
+
+AppRegistry.registerComponent('main', () => App);
+
+if (typeof document !== 'undefined') {
+    const rootTag = document.getElementById('root') || document.getElementById('main');
+    AppRegistry.runApplication('main', { rootTag });
+}
